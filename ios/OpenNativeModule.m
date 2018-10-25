@@ -14,7 +14,13 @@
 
 RCT_EXPORT_MODULE();
 
-RCT_EXPORT_METHOD(openNativeVC) {
+RCT_EXPORT_METHOD(openNativeVC:(NSDictionary *)dict) {
+  NSLog(@"chenyang log: %@", dict);
+  //NSLog(@"chenyang log: %lu", dict.count);
+  //NSLog(@"chenyang log: %@", [dict objectForKey:@"title"]);
+  for (NSString *key in dict) {
+    NSLog(@"chenyang log: key = %@, value = %@", key, [dict objectForKey:key]);
+  }
   dispatch_async(dispatch_get_main_queue(), ^{
     AppDelegate *delegate = (AppDelegate *)([UIApplication sharedApplication].delegate);
     UINavigationController *rootNav = delegate.navController;
