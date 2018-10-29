@@ -70,7 +70,8 @@ RCT_EXPORT_METHOD(testNativeCPP:(NSDictionary *)dict) {
  */
 RCT_EXPORT_METHOD(testNativeDownloadFile:(NSDictionary *)dict) {
   NSArray *url_list = [dict objectForKey:@"url_list"];
-  NSMutableArray *file_list = [NSMutableArray arrayWithCapacity:url_list.count];
+  NSMutableArray __block *file_list = [NSMutableArray arrayWithCapacity:url_list.count];
+  NSInteger __block task_count = 0;
   for (int i = 0; i < url_list.count; ++i) {
     // 替换url中的空格，否则ios不支持，会有错误码-1002
     NSString *tmpUrl = [url_list[i] stringByReplacingOccurrencesOfString:@" " withString:@"%20"];
@@ -102,17 +103,23 @@ RCT_EXPORT_METHOD(testNativeDownloadFile:(NSDictionary *)dict) {
       
       [file_list addObject:file];
       NSLog(@"chenyang log: LINE:%d, file list: %lu", __LINE__, file_list.count);
-
+      --task_count;  // 任务完成
       }];
     // 开始任务
+    ++task_count;
     [downloadTask resume];
     NSLog(@"chenyang log: finish");
     
     //break;
   }
-  NSLog(@"chenyang log: LINE:%d, file list: %lu", __LINE__, file_list.count);
-  for (int i = 0; i < file_list.count; ++i) {
-    NSLog(@"chenyang log: LINE:%d, file_name: %@", __LINE__, file_list[i]);
+  while (true) {
+    if (task_count <= 0) {
+      NSLog(@"chenyang log: LINE:%d, file list: %lu", __LINE__, file_list.count);
+      for (int i = 0; i < file_list.count; ++i) {
+        NSLog(@"chenyang log: LINE:%d, file_name: %@", __LINE__, file_list[i]);
+      }
+      break;
+    }
   }
 }
 
