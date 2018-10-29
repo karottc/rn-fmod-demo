@@ -64,6 +64,58 @@ RCT_EXPORT_METHOD(testNativeCPP:(NSDictionary *)dict) {
   //NSString *tmp = NSGet
 }
 
+/**
+ * 下载文件
+ *
+ */
+RCT_EXPORT_METHOD(testNativeDownloadFile:(NSDictionary *)dict) {
+  NSArray *url_list = [dict objectForKey:@"url_list"];
+  NSMutableArray *file_list = [NSMutableArray arrayWithCapacity:url_list.count];
+  for (int i = 0; i < url_list.count; ++i) {
+    // 替换url中的空格，否则ios不支持，会有错误码-1002
+    NSString *tmpUrl = [url_list[i] stringByReplacingOccurrencesOfString:@" " withString:@"%20"];
+    NSURL* url = [NSURL URLWithString:tmpUrl];
+    NSLog(@"chenyang log: download url: %@", tmpUrl);
+    // 得到session对象
+    NSURLSession* session = [NSURLSession sharedSession];
+    
+    // 创建任务
+    
+    NSURLSessionDownloadTask* downloadTask = [session downloadTaskWithURL:url completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+      //NSLog(@"chenyang log: file path: %@", location.path);
+      // NSLog(@"chenyang log: file name: %@", response.suggestedFilename);
+      //NSLog(@"chenyang log: error code: %@", error);   // 如果有异常，输出错误信息
+      // [file_list addObject:response.suggestedFilename];
+      
+      NSString *caches = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+      // response.suggestedFilename ： 建议使用的文件名，一般跟服务器端的文件名一致
+      NSString *file = [caches stringByAppendingPathComponent:response.suggestedFilename];
+      
+      // 将临时文件剪切或者复制Caches文件夹
+      NSFileManager *mgr = [NSFileManager defaultManager];
+      
+      // AtPath : 剪切前的文件路径
+      // ToPath : 剪切后的文件路径
+      [mgr moveItemAtPath:location.path toPath:file error:nil];
+      
+      NSLog(@"chenyang log: file path:%@", file);
+      
+      [file_list addObject:file];
+      NSLog(@"chenyang log: LINE:%d, file list: %lu", __LINE__, file_list.count);
+
+      }];
+    // 开始任务
+    [downloadTask resume];
+    NSLog(@"chenyang log: finish");
+    
+    //break;
+  }
+  NSLog(@"chenyang log: LINE:%d, file list: %lu", __LINE__, file_list.count);
+  for (int i = 0; i < file_list.count; ++i) {
+    NSLog(@"chenyang log: LINE:%d, file_name: %@", __LINE__, file_list[i]);
+  }
+}
+
 
 @end
 
