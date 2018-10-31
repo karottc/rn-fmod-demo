@@ -343,5 +343,159 @@ FMOD_RESULT loadFile(const char* filename, char** memoryBase, char** memoryPtr, 
   return FMOD_OK;
 }
 
+
+// 不重要的尝试
+RCT_EXPORT_METHOD(testNativePlayOneFile:(NSDictionary *)dict) {
+  NSArray *url_list = [dict objectForKey:@"url_list"];
+  NSMutableArray __block *file_list = [NSMutableArray arrayWithCapacity:url_list.count];
+  NSInteger __block task_count = 0;
+  NSString __block *file_name = @"";
+  // 替换url中的空格，否则ios不支持，会有错误码-1002
+  NSString *tmpUrl = [url_list[2] stringByReplacingOccurrencesOfString:@" " withString:@"%20"];
+  NSURL* url = [NSURL URLWithString:tmpUrl];
+  NSLog(@"chenyang log: download url: %@", tmpUrl);
+  // 得到session对象
+  NSURLSession* session = [NSURLSession sharedSession];
+  
+  // 创建任务
+  
+  NSURLSessionDownloadTask* downloadTask = [session downloadTaskWithURL:url completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+    //NSLog(@"chenyang log: file path: %@", location.path);
+    // NSLog(@"chenyang log: file name: %@", response.suggestedFilename);
+    //NSLog(@"chenyang log: error code: %@", error);   // 如果有异常，输出错误信息
+    // [file_list addObject:response.suggestedFilename];
+    
+    NSString *caches = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+    // response.suggestedFilename ： 建议使用的文件名，一般跟服务器端的文件名一致
+    NSString *file = [caches stringByAppendingPathComponent:response.suggestedFilename];
+    file_name = response.suggestedFilename;
+    
+    // 将临时文件剪切或者复制Caches文件夹
+    NSFileManager *mgr = [NSFileManager defaultManager];
+    
+    // AtPath : 剪切前的文件路径
+    // ToPath : 剪切后的文件路径
+    [mgr moveItemAtPath:location.path toPath:file error:nil];
+    
+    NSLog(@"chenyang log: file path:%@", file);
+    
+    [file_list addObject:file];
+    NSLog(@"chenyang log: LINE:%d, file list: %lu", __LINE__, file_list.count);
+    --task_count;  // 任务完成
+  }];
+  // 开始任务
+  ++task_count;
+  [downloadTask resume];
+  NSLog(@"chenyang log: finish");
+
+  while (true) {
+    if (task_count <= 0) {
+      NSLog(@"chenyang log: LINE:%d, file list: %lu", __LINE__, file_list.count);
+      for (int i = 0; i < file_list.count; ++i) {
+        NSLog(@"chenyang log: LINE:%d, file_name: %@", __LINE__, file_list[i]);
+      }
+      break;
+    }
+  }
+  
+  FMOD::Studio::System* system;
+  FMOD::Studio::EventDescription * eventDesc;
+  FMOD::Studio::EventInstance * engine;
+  FMOD::Studio::Bank* banks;
+  FMOD::Studio::System::create(&system);
+  system->initialize(1024, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, 0);
+  system->setCallback(studioCallback, FMOD_STUDIO_SYSTEM_CALLBACK_BANK_UNLOAD);
+  system->loadBankFile([file_list[0] cStringUsingEncoding:NSUTF8StringEncoding], FMOD_STUDIO_LOAD_BANK_NORMAL, &banks);
+  system->update();
+  NSString *eventStr = [@"event:/" stringByAppendingString: file_name];
+  //system->getEvent([eventStr cStringUsingEncoding:NSUTF8StringEncoding], &eventDesc);
+  system->getEvent("event:/chapter1", &eventDesc);
+  eventDesc->createInstance(&engine);
+  engine->start();
+  system->update();
+  cout << "LINE:" << __LINE__ << ",chenyang log: play start" << endl;
+}
+
+// 测试播放
+RCT_EXPORT_METHOD(testNativePlayFmodBanks:(NSDictionary *)dict) {
+  NSArray *url_list = [dict objectForKey:@"url_list"];
+  NSMutableArray __block *file_list = [NSMutableArray arrayWithCapacity:url_list.count];
+  NSInteger __block task_count = 0;
+  NSString __block *fmod_name = @"";
+  for (int i = 0; i < url_list.count; ++i) {
+    // 替换url中的空格，否则ios不支持，会有错误码-1002
+    NSString *tmpUrl = [url_list[i] stringByReplacingOccurrencesOfString:@" " withString:@"%20"];
+    NSURL* url = [NSURL URLWithString:tmpUrl];
+    NSLog(@"chenyang log: download url: %@", tmpUrl);
+    // 得到session对象
+    NSURLSession* session = [NSURLSession sharedSession];
+    
+    // 创建任务
+    
+    NSURLSessionDownloadTask* downloadTask = [session downloadTaskWithURL:url completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+      //NSLog(@"chenyang log: file path: %@", location.path);
+      // NSLog(@"chenyang log: file name: %@", response.suggestedFilename);
+      //NSLog(@"chenyang log: error code: %@", error);   // 如果有异常，输出错误信息
+      // [file_list addObject:response.suggestedFilename];
+      
+      NSString *caches = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+      // response.suggestedFilename ： 建议使用的文件名，一般跟服务器端的文件名一致
+      NSString *file = [caches stringByAppendingPathComponent:response.suggestedFilename];
+      if (i == url_list.count - 1) {
+        fmod_name = response.suggestedFilename;
+      }
+      
+      // 将临时文件剪切或者复制Caches文件夹
+      NSFileManager *mgr = [NSFileManager defaultManager];
+      
+      // AtPath : 剪切前的文件路径
+      // ToPath : 剪切后的文件路径
+      [mgr moveItemAtPath:location.path toPath:file error:nil];
+      
+      NSLog(@"chenyang log: file path:%@", file);
+      
+      [file_list addObject:file];
+      NSLog(@"chenyang log: LINE:%d, file list: %lu", __LINE__, file_list.count);
+      --task_count;  // 任务完成
+    }];
+    // 开始任务
+    ++task_count;
+    [downloadTask resume];
+    NSLog(@"chenyang log: finish");
+    
+    //break;
+  }
+  while (true) {
+    if (task_count <= 0) {
+      NSLog(@"chenyang log: LINE:%d, file list: %lu", __LINE__, file_list.count);
+      for (int i = 0; i < file_list.count; ++i) {
+        NSLog(@"chenyang log: LINE:%d, file_name: %@", __LINE__, file_list[i]);
+      }
+      break;
+    }
+  }
+  const int BANK_COUNT = (int)file_list.count;
+  FMOD::Studio::Bank* banks[BANK_COUNT];
+  FMOD::Studio::System* system;
+  FMOD::Studio::EventDescription * eventDesc;
+  FMOD::Studio::EventInstance * engine;
+  FMOD::Studio::System::create(&system);
+  system->initialize(1024, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, 0);
+  system->setCallback(studioCallback, FMOD_STUDIO_SYSTEM_CALLBACK_BANK_UNLOAD);
+  for (int i = 0; i < file_list.count; ++i) {
+    system->loadBankFile([file_list[i] cStringUsingEncoding:NSUTF8StringEncoding], FMOD_STUDIO_LOAD_BANK_NORMAL, &banks[i]);
+  }
+  system->update();
+  NSString *eventStr = [@"event:/" stringByAppendingString: fmod_name];
+  NSLog(@"chenyang log: LINE:%d, event_file: %@", __LINE__, eventStr);
+  // system->getEvent([eventStr cStringUsingEncoding:NSUTF8StringEncoding], &eventDesc);
+  system->getEvent("event:/chapter1", &eventDesc);
+  eventDesc->createInstance(&engine);
+  engine->start();
+  system->update();
+  cout << "LINE:" << __LINE__ << ",chenyang log: play start" << endl;
+}
+
+
 @end
 
