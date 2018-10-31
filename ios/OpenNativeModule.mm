@@ -11,6 +11,12 @@
 #import "NativeViewController.h"
 
 #include <iostream>
+#include "fmod/fmod_studio.hpp"
+#include "fmod/fmod.hpp"
+#include "fmod/common.h"
+#include "fmod/fmod_common.h"
+//#include "fmod.hpp"
+
 using namespace std;
 
 @implementation OpenNativeModule
@@ -121,8 +127,221 @@ RCT_EXPORT_METHOD(testNativeDownloadFile:(NSDictionary *)dict) {
       break;
     }
   }
+  
+  // 调用fmod studio api
+  const int BANK_COUNT = (int)file_list.count;
+  FMOD::Studio::Bank* banks[BANK_COUNT];
+  bool wantBankLoaded[BANK_COUNT];
+  bool wantSampleLoad = true;
+  
+  void *extraDriverData = 0;
+  Common_Init(&extraDriverData);
+  
+  FMOD::Studio::System* system;
+  FMOD::Studio::EventDescription * eventDesc;
+  FMOD::Studio::EventInstance * engine;
+  ERRCHECK( FMOD::Studio::System::create(&system) );
+  ERRCHECK( system->initialize(1024, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, extraDriverData) );
+  ERRCHECK( system->setCallback(studioCallback, FMOD_STUDIO_SYSTEM_CALLBACK_BANK_UNLOAD) );
+  int ret = 0;
+  for (int i=0; i<BANK_COUNT; ++i)
+  {
+    //if (Common_BtnPress((Common_Button)(BTN_ACTION1 + i)))
+    {
+      // Toggle bank load, or bank unload
+      //if (!wantBankLoaded[i])
+      {
+        //ERRCHECK(loadBank(system, LoadBank_File, Common_MediaPath([file_list[i] cStringUsingEncoding:NSUTF8StringEncoding]), &banks[i]));
+        //wantBankLoaded[i] = true;
+        
+        char* file_name = (char *)[file_list[i] cStringUsingEncoding:NSUTF8StringEncoding];
+        
+        ret = system->loadBankFile(file_name, FMOD_STUDIO_LOAD_BANK_NORMAL, &banks[i]);
+        
+        cout << "LINE:" << __LINE__ << ",chenyang log:" << file_name << ",ret=" << ret << endl;
+      }
+      /*
+      else
+      {
+        ERRCHECK(banks[i]->unload());
+        wantBankLoaded[i] = false;
+      }
+       */
+    }
+  }
+  /*
+  if (Common_BtnPress(BTN_MORE))
+  {
+    wantSampleLoad = !wantSampleLoad;
+  }
+   */
+  /*
+  FMOD_RESULT loadStateResult[3] = { FMOD_OK, FMOD_OK, FMOD_OK };
+  FMOD_RESULT sampleStateResult[3] = { FMOD_OK, FMOD_OK, FMOD_OK };
+  FMOD_STUDIO_LOADING_STATE bankLoadState[3] = { FMOD_STUDIO_LOADING_STATE_UNLOADED, FMOD_STUDIO_LOADING_STATE_UNLOADED, FMOD_STUDIO_LOADING_STATE_UNLOADED };
+  FMOD_STUDIO_LOADING_STATE sampleLoadState[3] = { FMOD_STUDIO_LOADING_STATE_UNLOADED, FMOD_STUDIO_LOADING_STATE_UNLOADED, FMOD_STUDIO_LOADING_STATE_UNLOADED };
+  for (int i=0; i<BANK_COUNT; ++i)
+  {
+    if (banks[i] && banks[i]->isValid())
+    {
+      loadStateResult[i] = banks[i]->getLoadingState(&bankLoadState[i]);
+    }
+    if (bankLoadState[i] == FMOD_STUDIO_LOADING_STATE_LOADED)
+    {
+      sampleStateResult[i] = banks[i]->getSampleLoadingState(&sampleLoadState[i]);
+      if (wantSampleLoad && sampleLoadState[i] == FMOD_STUDIO_LOADING_STATE_UNLOADED)
+      {
+        ERRCHECK(banks[i]->loadSampleData());
+      }
+      else if (!wantSampleLoad && (sampleLoadState[i] == FMOD_STUDIO_LOADING_STATE_LOADING || sampleLoadState[i] == FMOD_STUDIO_LOADING_STATE_LOADED))
+      {
+        ERRCHECK(banks[i]->unloadSampleData());
+      }
+    }
+  }
+   */
+  cout << "LINE:" << __LINE__ << ",chenyang log:" << endl;
+  ERRCHECK( system->update() );
+  
+  system->getEvent("event:/chapter1", &eventDesc);
+  eventDesc->createInstance(&engine);
+  engine->start();
+  system->update();
 }
 
+//
+// Load method as enum for our sample code
+//
+enum LoadBankMethod
+{
+  LoadBank_File,
+  LoadBank_Memory,
+  LoadBank_MemoryPoint,
+  LoadBank_Custom
+};
+
+//
+// Callback to free memory-point allocation when it is safe to do so
+//
+FMOD_RESULT F_CALLBACK studioCallback(FMOD_STUDIO_SYSTEM *system, FMOD_STUDIO_SYSTEM_CALLBACK_TYPE type, void *commanddata, void *userdata)
+{
+  if (type == FMOD_STUDIO_SYSTEM_CALLBACK_BANK_UNLOAD)
+  {
+    // For memory-point, it is now safe to free our memory
+    FMOD::Studio::Bank* bank = (FMOD::Studio::Bank*)commanddata;
+    void* memory;
+    ERRCHECK(bank->getUserData(&memory));
+    if (memory)
+    {
+      free(memory);
+    }
+  }
+  return FMOD_OK;
+}
+
+//
+// Helper function that loads a bank in using the given method
+//
+FMOD_RESULT loadBank(FMOD::Studio::System* system, LoadBankMethod method, const char* filename, FMOD::Studio::Bank** bank)
+{
+  cout << "LINE:" << __LINE__ << ",chenyang log:" << method << "," << filename << endl;
+  if (method == LoadBank_File)
+  {
+    // return system->loadBankFile(filename, FMOD_STUDIO_LOAD_BANK_NONBLOCKING, bank);
+    // loading 完成再返回
+    return system->loadBankFile(filename, FMOD_STUDIO_LOAD_BANK_NORMAL, bank);
+  }
+  else if (method == LoadBank_Memory || method == LoadBank_MemoryPoint)
+  {
+    char* memoryBase;
+    char* memoryPtr;
+    int memoryLength;
+    FMOD_RESULT result = loadFile(filename, &memoryBase, &memoryPtr, &memoryLength);
+    if (result != FMOD_OK)
+    {
+      return result;
+    }
+    
+    FMOD_STUDIO_LOAD_MEMORY_MODE memoryMode = (method == LoadBank_MemoryPoint ? FMOD_STUDIO_LOAD_MEMORY_POINT : FMOD_STUDIO_LOAD_MEMORY);
+    result = system->loadBankMemory(memoryPtr, memoryLength, memoryMode, FMOD_STUDIO_LOAD_BANK_NONBLOCKING, bank);
+    if (result != FMOD_OK)
+    {
+      free(memoryBase);
+      return result;
+    }
+    
+    if (method == LoadBank_MemoryPoint)
+    {
+      // Keep memory around until bank unload completes
+      result = (*bank)->setUserData(memoryBase);
+    }
+    else
+    {
+      // Don't need memory any more
+      free(memoryBase);
+    }
+    return result;
+  }
+  else
+  {
+    // Set up custom callback
+    FMOD_STUDIO_BANK_INFO info;
+    memset(&info, 0, sizeof(info));
+    info.size = sizeof(info);
+    //info.opencallback = customFileOpen;
+    //info.closecallback = customFileClose;
+    //info.readcallback = customFileRead;
+    //info.seekcallback = customFileSeek;
+    info.userdata = (void*)filename;
+    
+    return system->loadBankCustom(&info, FMOD_STUDIO_LOAD_BANK_NONBLOCKING, bank);
+  }
+}
+
+//
+// Helper function that loads a file into aligned memory buffer
+//
+FMOD_RESULT loadFile(const char* filename, char** memoryBase, char** memoryPtr, int* memoryLength)
+{
+  // If we don't support fopen then just return a single invalid byte for our file
+  size_t length = 1;
+  
+#ifdef ENABLE_FILE_OPEN
+  FILE* file = fopen(filename, "rb");
+  if (!file)
+  {
+    return FMOD_ERR_FILE_NOTFOUND;
+  }
+  fseek(file, 0, SEEK_END);
+  length = ftell(file);
+  fseek(file, 0, SEEK_SET);
+  if (length >= MAX_FILE_LENGTH)
+  {
+    fclose(file);
+    return FMOD_ERR_FILE_BAD;
+  }
+#endif
+  
+  // Load into a pointer aligned to FMOD_STUDIO_LOAD_MEMORY_ALIGNMENT
+  char* membase = reinterpret_cast<char*>(malloc(length + FMOD_STUDIO_LOAD_MEMORY_ALIGNMENT));
+  char* memptr = (char*)(((size_t)membase + (FMOD_STUDIO_LOAD_MEMORY_ALIGNMENT-1)) & ~(FMOD_STUDIO_LOAD_MEMORY_ALIGNMENT-1));
+  
+#ifdef ENABLE_FILE_OPEN
+  size_t bytesRead = fread(memptr, 1, length, file);
+  fclose(file);
+  if (bytesRead != length)
+  {
+    free(membase);
+    return FMOD_ERR_FILE_BAD;
+  }
+#endif
+  
+  *memoryBase = membase;
+  *memoryPtr = memptr;
+  *memoryLength = (int)length;
+  cout << "LINE: " << __LINE__ << ",chenyang log:" << length << endl;
+  return FMOD_OK;
+}
 
 @end
 
