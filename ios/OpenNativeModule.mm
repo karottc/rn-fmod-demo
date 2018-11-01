@@ -23,6 +23,15 @@ using namespace std;
 
 RCT_EXPORT_MODULE();
 
+static FMOD::Studio::System* gsystem = NULL;
+static FMOD::Studio::EventDescription * geventDesc = NULL;
+static FMOD::Studio::EventInstance * gengine = NULL;
+static bool gStop = false;
+
+RCT_EXPORT_METHOD(initFmod) {
+  FMOD::Studio::System::create(&gsystem);
+}
+
 RCT_EXPORT_METHOD(openNativeVC:(NSDictionary *)dict) {
   NSLog(@"chenyang log: %@", dict);
   //NSLog(@"chenyang log: %lu", dict.count);
@@ -476,26 +485,55 @@ RCT_EXPORT_METHOD(testNativePlayFmodBanks:(NSDictionary *)dict) {
   }
   const int BANK_COUNT = (int)file_list.count;
   FMOD::Studio::Bank* banks[BANK_COUNT];
-  FMOD::Studio::System* system;
-  FMOD::Studio::EventDescription * eventDesc;
-  FMOD::Studio::EventInstance * engine;
-  FMOD::Studio::System::create(&system);
-  system->initialize(1024, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, 0);
-  system->setCallback(studioCallback, FMOD_STUDIO_SYSTEM_CALLBACK_BANK_UNLOAD);
-  for (int i = 0; i < file_list.count; ++i) {
-    system->loadBankFile([file_list[i] cStringUsingEncoding:NSUTF8StringEncoding], FMOD_STUDIO_LOAD_BANK_NORMAL, &banks[i]);
+  if (gsystem == NULL) {
+    FMOD::Studio::System::create(&gsystem);
+  } else {
+    gsystem->unloadAll();
   }
-  system->update();
+  gsystem->initialize(1024, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, 0);
+  gsystem->setCallback(studioCallback, FMOD_STUDIO_SYSTEM_CALLBACK_BANK_UNLOAD);
+  for (int i = 0; i < file_list.count; ++i) {
+    gsystem->loadBankFile([file_list[i] cStringUsingEncoding:NSUTF8StringEncoding], FMOD_STUDIO_LOAD_BANK_NORMAL, &banks[i]);
+  }
+  gsystem->update();
   NSString *eventStr = [@"event:/" stringByAppendingString: fmod_name];
   NSLog(@"chenyang log: LINE:%d, event_file: %@", __LINE__, eventStr);
   // system->getEvent([eventStr cStringUsingEncoding:NSUTF8StringEncoding], &eventDesc);
-  system->getEvent("event:/chapter1", &eventDesc);
-  eventDesc->createInstance(&engine);
-  engine->start();
-  system->update();
+  // 控制延迟的，暂时不用
+  //FMOD::System *lowLevelSystem;
+  //gsystem->getLowLevelSystem(&lowLevelSystem);
+  //lowLevelSystem->setDSPBufferSize(4096, 2);
+  gsystem->getEvent("event:/chapter1", &geventDesc);
+  geventDesc->createInstance(&gengine);
+  gengine->start();
+  gsystem->update();
   cout << "LINE:" << __LINE__ << ",chenyang log: play start" << endl;
 }
 
+// 暂停播放
+RCT_EXPORT_METHOD(testNativeFmodPause) {
+  bool paused = false;
+  int ret = gengine->getPaused(&paused);
+  cout << "LINE:" << __LINE__ << ",chenyang log: pause:" << paused << ",ret:" << ret << endl;
+  ret = gengine->setPaused(!paused);
+  gengine->setTimelinePosition(19.200000000000003 * 1000);
+  gsystem->update();
+  //cout << "LINE:" << __LINE__ << ",chenyang log: pause:" << ret << endl;
+}
+// 继续播放
+RCT_EXPORT_METHOD(testNativeFmodStop) {
+  //gengine->start();
+  if (gStop == false) {
+    gengine->stop(FMOD_STUDIO_STOP_IMMEDIATE);
+    gStop = true;
+  } else {
+    gengine->start();
+    gStop = false;
+  }
+  
+  gsystem->update();
+  cout << "LINE:" << __LINE__ << ",chenyang log: stop:" << gStop << endl;
+}
 
 @end
 
