@@ -15,6 +15,7 @@
 #include "fmod/fmod.hpp"
 #include "fmod/common.h"
 #include "fmod/fmod_common.h"
+#include "fmod/fmod_studio_common.h"
 //#include "fmod.hpp"
 
 using namespace std;
@@ -430,7 +431,7 @@ RCT_EXPORT_METHOD(testNativePlayFmodBanks:(NSDictionary *)dict) {
   NSArray *url_list = [dict objectForKey:@"url_list"];
   NSMutableArray __block *file_list = [NSMutableArray arrayWithCapacity:url_list.count];
   NSInteger __block task_count = 0;
-  NSString __block *fmod_name = @"";
+  NSString __block *fmod_name = [dict objectForKey:@"event"];
   for (int i = 0; i < url_list.count; ++i) {
     // 替换url中的空格，否则ios不支持，会有错误码-1002
     NSString *tmpUrl = [url_list[i] stringByReplacingOccurrencesOfString:@" " withString:@"%20"];
@@ -448,11 +449,12 @@ RCT_EXPORT_METHOD(testNativePlayFmodBanks:(NSDictionary *)dict) {
       // [file_list addObject:response.suggestedFilename];
       
       NSString *caches = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+      // caches = [caches stringByAppendingString: fmod_name];
       // response.suggestedFilename ： 建议使用的文件名，一般跟服务器端的文件名一致
-      NSString *file = [caches stringByAppendingPathComponent:response.suggestedFilename];
-      if (i == url_list.count - 1) {
-        fmod_name = response.suggestedFilename;
-      }
+      NSString *file = [caches stringByAppendingPathComponent:[fmod_name stringByAppendingString:response.suggestedFilename]];
+      //if (i == url_list.count - 1) {
+      //  fmod_name = response.suggestedFilename;
+      //}
       
       // 将临时文件剪切或者复制Caches文件夹
       NSFileManager *mgr = [NSFileManager defaultManager];
@@ -460,8 +462,10 @@ RCT_EXPORT_METHOD(testNativePlayFmodBanks:(NSDictionary *)dict) {
       // AtPath : 剪切前的文件路径
       // ToPath : 剪切后的文件路径
       [mgr moveItemAtPath:location.path toPath:file error:nil];
+      // 获取文件大小
+      NSDictionary *fileDic = [mgr attributesOfItemAtPath:file error:nil];//获取文件的属性
       
-      NSLog(@"chenyang log: file path:%@", file);
+      NSLog(@"chenyang log: file path:%@,size=%lu", file, [[fileDic objectForKey:NSFileSize] longLongValue]);
       
       [file_list addObject:file];
       NSLog(@"chenyang log: LINE:%d, file list: %lu", __LINE__, file_list.count);
@@ -486,10 +490,15 @@ RCT_EXPORT_METHOD(testNativePlayFmodBanks:(NSDictionary *)dict) {
   const int BANK_COUNT = (int)file_list.count;
   FMOD::Studio::Bank* banks[BANK_COUNT];
   if (gsystem == NULL) {
-    FMOD::Studio::System::create(&gsystem);
+    NSLog(@"chenyang log: LINE:%d, init fmod studio system", __LINE__);
+    //FMOD::Studio::System::create(&gsystem);
   } else {
-    gsystem->unloadAll();
+    NSLog(@"chenyang log: LINE:%d, unloadAll fmod studio system", __LINE__);
+    //gengine->stop(FMOD_STUDIO_STOP_IMMEDIATE);
+    //gsystem->unloadAll();
+    gsystem->release();
   }
+  FMOD::Studio::System::create(&gsystem);
   gsystem->initialize(1024, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, 0);
   gsystem->setCallback(studioCallback, FMOD_STUDIO_SYSTEM_CALLBACK_BANK_UNLOAD);
   for (int i = 0; i < file_list.count; ++i) {
@@ -498,13 +507,18 @@ RCT_EXPORT_METHOD(testNativePlayFmodBanks:(NSDictionary *)dict) {
   gsystem->update();
   NSString *eventStr = [@"event:/" stringByAppendingString: fmod_name];
   NSLog(@"chenyang log: LINE:%d, event_file: %@", __LINE__, eventStr);
-  // system->getEvent([eventStr cStringUsingEncoding:NSUTF8StringEncoding], &eventDesc);
+  gsystem->getEvent([eventStr cStringUsingEncoding:NSUTF8StringEncoding], &geventDesc);
   // 控制延迟的，暂时不用
   //FMOD::System *lowLevelSystem;
   //gsystem->getLowLevelSystem(&lowLevelSystem);
   //lowLevelSystem->setDSPBufferSize(4096, 2);
-  gsystem->getEvent("event:/chapter1", &geventDesc);
+  //gsystem->getEvent("event:/chapter07", &geventDesc);
   geventDesc->createInstance(&gengine);
+  gengine->setCallback(markerCallback,
+                       FMOD_STUDIO_EVENT_CALLBACK_TIMELINE_MARKER
+                       | FMOD_STUDIO_EVENT_CALLBACK_TIMELINE_BEAT
+                       | FMOD_STUDIO_EVENT_CALLBACK_SOUND_PLAYED
+                       | FMOD_STUDIO_EVENT_CALLBACK_SOUND_STOPPED);
   gengine->start();
   gsystem->update();
   cout << "LINE:" << __LINE__ << ",chenyang log: play start" << endl;
@@ -516,7 +530,7 @@ RCT_EXPORT_METHOD(testNativeFmodPause) {
   int ret = gengine->getPaused(&paused);
   cout << "LINE:" << __LINE__ << ",chenyang log: pause:" << paused << ",ret:" << ret << endl;
   ret = gengine->setPaused(!paused);
-  gengine->setTimelinePosition(19.200000000000003 * 1000);
+  //gengine->setTimelinePosition(19.200000000000003 * 1000);
   gsystem->update();
   //cout << "LINE:" << __LINE__ << ",chenyang log: pause:" << ret << endl;
 }
@@ -533,6 +547,43 @@ RCT_EXPORT_METHOD(testNativeFmodStop) {
   
   gsystem->update();
   cout << "LINE:" << __LINE__ << ",chenyang log: stop:" << gStop << endl;
+}
+
+
+// marker的回调
+FMOD_RESULT F_CALLBACK markerCallback(FMOD_STUDIO_EVENT_CALLBACK_TYPE type, FMOD_STUDIO_EVENTINSTANCE *event, void *parameters) {
+  cout << "LINE:" << __LINE__ << ",chenyang log: type:" << type << ",obj:" << FMOD_STUDIO_EVENT_CALLBACK_TIMELINE_MARKER << endl;
+  if (type == FMOD_STUDIO_EVENT_CALLBACK_TIMELINE_MARKER) {
+    FMOD_STUDIO_TIMELINE_MARKER_PROPERTIES* props = (FMOD_STUDIO_TIMELINE_MARKER_PROPERTIES*)parameters;
+    cout << "LINE:" << __LINE__ << ",chenyang log: params marker:" << props->name << endl;
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"sendCustomEventNotification" object:[NSString stringWithUTF8String:props->name]];
+
+  }
+  return FMOD_OK;
+}
+
+
+// native 主动通知 rn端
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
+    [defaultCenter removeObserver:self];
+    [defaultCenter addObserver:self
+                      selector:@selector(sendCustomEvent:)
+                          name:@"sendCustomEventNotification"
+                        object:nil];
+  }
+  return self;
+}
+- (void)sendCustomEvent:(NSNotification *)notification {
+  NSString *name = notification.object;
+  NSLog(@"LINE: %d,chenyang log: notification:%@", __LINE__,name);
+  [self sendEventWithName:@"customEvent" body:name];
+}
+/// 重写方法，定义支持的事件集合
+- (NSArray<NSString *> *)supportedEvents {
+  return @[@"customEvent"];
 }
 
 @end

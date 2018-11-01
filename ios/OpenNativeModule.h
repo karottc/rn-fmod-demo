@@ -11,8 +11,9 @@
 
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 
-@interface OpenNativeModule : NSObject<RCTBridgeModule>
+@interface OpenNativeModule : RCTEventEmitter<RCTBridgeModule>
 
 @end
 
