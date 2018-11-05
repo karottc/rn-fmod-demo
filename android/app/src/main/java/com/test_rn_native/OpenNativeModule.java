@@ -87,11 +87,13 @@ public class OpenNativeModule extends ReactContextBaseJavaModule {
         }
     }
     public String downloadFile(String url, String namePre) {
+        Log.i("chenyang","step into");
         String filePath = "";
         try {
             String downPath = mReactContext.getExternalFilesDir(null).toString() + "/";
             long startTime = System.currentTimeMillis();
             String filename = namePre + url.substring(url.lastIndexOf("/") + 1);
+            Log.i("chenyang","start download");
             URL myURL = new URL(url);
             URLConnection conn = myURL.openConnection();
             conn.connect();
@@ -105,7 +107,7 @@ public class OpenNativeModule extends ReactContextBaseJavaModule {
             }
             filePath = downPath + filename;
             FileOutputStream fos = new FileOutputStream(filePath);
-            byte buf[] = new byte[1024];
+            byte buf[] = new byte[4096];
             int downLoadFileSize = 0;
             do{
                 //循环读取
