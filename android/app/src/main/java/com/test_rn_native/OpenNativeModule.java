@@ -87,7 +87,7 @@ public class OpenNativeModule extends ReactContextBaseJavaModule {
         }
     }
     public String downloadFile(String url, String namePre) {
-        Log.i("chenyang","step into");
+        Log.i("chenyang","downloadFile step into，url=" + url);
         String filePath = "";
         try {
             String downPath = mReactContext.getExternalFilesDir(null).toString() + "/";
@@ -134,8 +134,26 @@ public class OpenNativeModule extends ReactContextBaseJavaModule {
         Log.d("chenyang", "testNativePlayFmodBanks into");
         String namePre = map.getString("name_pre");
         String fmodName = map.getString("event");
-        String[] urlList = new String[3];
-        String s = testParams(urlList, fmodName);
+        ReadableArray urlList = map.getArray("url_list");
+        String[] fileList = new String[urlList.size()];
+
+        // 下载文件
+        for (int i = 0; i < urlList.size(); ++i) {
+            String fileName = downloadFile(urlList.getString(i), namePre);
+            fileList[i] = fileName;
+        }
+
+        // 验证文件大小
+        for (int i = 0; i < fileList.length; ++i) {
+            File f = new File(fileList[i]);
+            if (f.exists() && f.isFile()) {
+                Log.d("chenyang", fileList[i] + " size:" + f.length());
+            } else {
+                Log.d("chenyang", "file not exists:" + fileList[i]);
+            }
+        }
+
+        String s = testParams(fileList, fmodName);
         Log.d("chenyang",s);
 
     }

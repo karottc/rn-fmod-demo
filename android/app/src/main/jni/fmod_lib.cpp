@@ -6,6 +6,7 @@
 #include <android/log.h>
 #include <stdio.h>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -23,16 +24,25 @@ extern "C" {
 JNIEXPORT jstring JNICALL Java_com_test_1rn_1native_OpenNativeModule_testParams
   (JNIEnv *env, jobject obj, jobjectArray urlList, jstring fmodName) {
     LOGD("STEP into native method");
-    jboolean isCopy;
-    //LOGD(fmodName);
+    jboolean isCopy = false;
     const char *str = env->GetStringUTFChars(fmodName, &isCopy);
-    
     if (str == NULL) {
         LOGD("this error");
         return NULL;
     }
-
     LOGD("fmodName:%s", str);
+
+    int len = env->GetArrayLength(urlList);
+    vector<string> fileList;
+    for (int i = 0; i < len; ++i) {
+        jstring jstr = (jstring)env->GetObjectArrayElement(urlList, i);
+        string url = env->GetStringUTFChars(jstr, NULL);
+        fileList.push_back(url);
+    }
+
+    for (int i = 0; i < fileList.size(); ++i) {
+        LOGD("file %d: %s",i, fileList[i].c_str());
+    }
 
     //char * tmpStr = "success testParams";
     //jstring retStr = env->NewStringUTF(tmpStr);
