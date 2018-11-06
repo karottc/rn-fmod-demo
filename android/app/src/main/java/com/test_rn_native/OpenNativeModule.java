@@ -127,4 +127,18 @@ public class OpenNativeModule extends ReactContextBaseJavaModule {
         }
         return filePath;
     }
+
+    @ReactMethod
+    public void testNativePlayFmodBanks(ReadableMap map) {
+        // 测试播放音频
+        Log.d("chenyang", "testNativePlayFmodBanks into");
+        String namePre = map.getString("name_pre");
+        String fmodName = map.getString("event");
+        String[] urlList = new String[3];
+        String s = testParams(urlList, fmodName);
+        Log.d("chenyang",s);
+
+    }
+    // 创建native 方法
+    public native String testParams(String[] fileList, String fmodName);
 }

@@ -1,6 +1,7 @@
 apply plugin: "com.android.application"
 
 import com.android.build.OutputFile
+import org.apache.tools.ant.taskdefs.condition.Os
 
 /**
  * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
@@ -103,10 +104,20 @@ android {
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
-        ndk {
-            abiFilters "armeabi-v7a", "x86"
+        //ndk {
+        //    moduleName "fmodNative"
+        //    abiFilters "armeabi-v7a", "x86"
+        //    ldLibs "log", "z", "m"
+            //stl "stlport_shared"
+        //}
+        externalNativeBuild {
+            cmake {
+                cppFlags ""
+                abiFilters "armeabi-v7a", "x86"
+            }
         }
     }
+    
     splits {
         abi {
             reset()
@@ -119,6 +130,11 @@ android {
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path file('CMakeLists.txt')
         }
     }
     // applicationVariants are e.g. debug, release
@@ -134,6 +150,21 @@ android {
             }
         }
     }
+    //sourceSets.main {
+        //jniLibs.srcDir 'src/main/libs'
+    //    jni.srcDirs = []
+    //}
+    /*task ndkBuild(type: Exec) {
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            commandLine 'ndk-build.cmd', '-C', file('src/main').absolutePath
+        } else {
+            commandLine '/Users/cy/Library/Android/sdk/ndk-bundle/ndk-build', '-C', file('src/main').absolutePath
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn ndkBuild
+    }*/
 }
 
 dependencies {

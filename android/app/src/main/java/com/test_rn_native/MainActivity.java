@@ -12,4 +12,10 @@ public class MainActivity extends ReactActivity {
     protected String getMainComponentName() {
         return "test_rn_native";
     }
+
+    //固定写法，表示我们要加载的资源文件为libhello.so
+    static {
+        System.loadLibrary("fmodNative");
+    }
+
 }
