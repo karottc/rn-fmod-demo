@@ -8,6 +8,11 @@
 #include <string>
 #include <vector>
 
+#include "fmod_studio.hpp"
+#include "fmod.hpp"
+#include "fmod_common.h"
+#include "fmod_studio_common.h"
+
 using namespace std;
 
 #define LOG_TAG "chenyang"
@@ -21,6 +26,27 @@ using namespace std;
 extern "C" {
 #endif
 
+//
+// Callback to free memory-point allocation when it is safe to do so
+//
+FMOD_RESULT F_CALLBACK studioCallback(FMOD_STUDIO_SYSTEM *system, FMOD_STUDIO_SYSTEM_CALLBACK_TYPE type, void *commanddata, void *userdata)
+{
+    if (type == FMOD_STUDIO_SYSTEM_CALLBACK_BANK_UNLOAD)
+    {
+        // For memory-point, it is now safe to free our memory
+        FMOD::Studio::Bank* bank = (FMOD::Studio::Bank*)commanddata;
+        void* memory;
+        // ERRCHECK(bank->getUserData(&memory));
+        bank->getUserData(&memory);
+        if (memory)
+        {
+            free(memory);
+        }
+    }
+    return FMOD_OK;
+}
+
+
 JNIEXPORT jstring JNICALL Java_com_test_1rn_1native_OpenNativeModule_testParams
   (JNIEnv *env, jobject obj, jobjectArray urlList, jstring fmodName) {
     LOGD("STEP into native method");
@@ -31,6 +57,7 @@ JNIEXPORT jstring JNICALL Java_com_test_1rn_1native_OpenNativeModule_testParams
         return NULL;
     }
     LOGD("fmodName:%s", str);
+    string fmodNameStr = str;
 
     int len = env->GetArrayLength(urlList);
     vector<string> fileList;
@@ -44,11 +71,32 @@ JNIEXPORT jstring JNICALL Java_com_test_1rn_1native_OpenNativeModule_testParams
         LOGD("file %d: %s",i, fileList[i].c_str());
     }
 
-    //char * tmpStr = "success testParams";
-    //jstring retStr = env->NewStringUTF(tmpStr);
+    FMOD::Studio::System* gsystem;
+    FMOD::Studio::EventDescription * geventDesc;
+    FMOD::Studio::EventInstance * gengine;
+
+    const int BANK_COUNT = fileList.size();
+    FMOD::Studio::Bank* banks[BANK_COUNT];
+
+    FMOD::Studio::System::create(&gsystem);
+    gsystem->initialize(1024, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, 0);
+    gsystem->setCallback(studioCallback, FMOD_STUDIO_SYSTEM_CALLBACK_BANK_UNLOAD);
+    for (int i = 0; i < fileList.size(); ++i) {
+        gsystem->loadBankFile(fileList[i].c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &banks[i]);
+    }
+    gsystem->update();
+
+    string eventStr = "event:/" + fmodNameStr;
+
+    LOGD("event:%s",eventStr.c_str());
+
+    gsystem->getEvent(eventStr.c_str(), &geventDesc);
+    geventDesc->createInstance(&gengine);
+
+    gengine->start();
+    gsystem->update();
+
     return env->NewStringUTF("success testParams");
-    //env->GetString
-    //return NULL;
 }
 
 #ifdef __cplusplus
