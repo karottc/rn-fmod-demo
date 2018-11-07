@@ -13,18 +13,22 @@
 		00C302E91ABCBA2D00DB3ED1 /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302DC1ABCB9D200DB3ED1 /* libRCTNetwork.a */; };
 		00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302E41ABCB9EE00DB3ED1 /* libRCTVibration.a */; };
 		00E356F31AD99517003FC87E /* test_rn_nativeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* test_rn_nativeTests.m */; };
-		01FE7E1A2181A77800DFC465 /* OpenNativeModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 01FE7E192181A77800DFC465 /* OpenNativeModule.m */; };
+		01132B3F21845C7B0018A518 /* OpenNativeModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 01132B1921845C7B0018A518 /* OpenNativeModule.mm */; };
+		01132B4121845C8D0018A518 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 01132B4021845C8D0018A518 /* AppDelegate.mm */; };
+		01C12941218804DF0093A7FD /* libfmodstudioL_iphonesimulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 01C1291B218804DF0093A7FD /* libfmodstudioL_iphonesimulator.a */; };
+		01C1295121882BCA0093A7FD /* libfmodL_iphonesimulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 01C1295021882BCA0093A7FD /* libfmodL_iphonesimulator.a */; };
+		01C12956218833D90093A7FD /* common_platform.mm in Sources */ = {isa = PBXBuildFile; fileRef = 01C12953218833D90093A7FD /* common_platform.mm */; };
+		01C12957218833D90093A7FD /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01C12955218833D90093A7FD /* common.cpp */; };
+		01C1295A218841C90093A7FD /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01C12959218841C90093A7FD /* GameController.framework */; };
 		01FE7E1D2181A8A900DFC465 /* NativeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01FE7E1C2181A8A900DFC465 /* NativeViewController.m */; };
 		133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C398B91ACF4ADC00677621 /* libRCTLinking.a */; };
 		139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139105C11AF99BAD00B5F7CC /* libRCTSettings.a */; };
 		139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDEF41B06529B00C62182 /* libRCTWebSocket.a */; };
-		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
-		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2D02E4C21E0B4AEC006451C7 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157351DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
@@ -327,15 +331,34 @@
 		00E356EE1AD99517003FC87E /* test_rn_nativeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = test_rn_nativeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* test_rn_nativeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = test_rn_nativeTests.m; sourceTree = "<group>"; };
+		01132B1921845C7B0018A518 /* OpenNativeModule.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenNativeModule.mm; sourceTree = "<group>"; };
+		01132B4021845C8D0018A518 /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = test_rn_native/AppDelegate.mm; sourceTree = "<group>"; };
+		01C1291B218804DF0093A7FD /* libfmodstudioL_iphonesimulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfmodstudioL_iphonesimulator.a; path = "../../../../Downloads/lib/iosFMOD Programmers API/api/studio/lib/libfmodstudioL_iphonesimulator.a"; sourceTree = "<group>"; };
+		01C12945218807310093A7FD /* fmod_studio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fmod_studio.h; path = fmod/fmod_studio.h; sourceTree = "<group>"; };
+		01C12946218807310093A7FD /* fmod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fmod.h; path = fmod/fmod.h; sourceTree = "<group>"; };
+		01C12947218807310093A7FD /* fmod_studio_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fmod_studio_common.h; path = fmod/fmod_studio_common.h; sourceTree = "<group>"; };
+		01C12948218807310093A7FD /* fmod.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = fmod.hpp; path = fmod/fmod.hpp; sourceTree = "<group>"; };
+		01C12949218807320093A7FD /* fmod_studio.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = fmod_studio.hpp; path = fmod/fmod_studio.hpp; sourceTree = "<group>"; };
+		01C1294A218807320093A7FD /* fmod_ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fmod_ios.h; path = fmod/fmod_ios.h; sourceTree = "<group>"; };
+		01C1294B21882AF30093A7FD /* fmod_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fmod_common.h; path = fmod/fmod_common.h; sourceTree = "<group>"; };
+		01C1294C21882B1A0093A7FD /* fmod_dsp_effects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fmod_dsp_effects.h; path = fmod/fmod_dsp_effects.h; sourceTree = "<group>"; };
+		01C1294D21882B1A0093A7FD /* fmod_output.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fmod_output.h; path = fmod/fmod_output.h; sourceTree = "<group>"; };
+		01C1294E21882B1A0093A7FD /* fmod_codec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fmod_codec.h; path = fmod/fmod_codec.h; sourceTree = "<group>"; };
+		01C1294F21882B460093A7FD /* fmod_dsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fmod_dsp.h; path = fmod/fmod_dsp.h; sourceTree = "<group>"; };
+		01C1295021882BCA0093A7FD /* libfmodL_iphonesimulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfmodL_iphonesimulator.a; path = "../../../../Downloads/lib/iosFMOD Programmers API/api/lowlevel/lib/libfmodL_iphonesimulator.a"; sourceTree = "<group>"; };
+		01C12952218833D90093A7FD /* common_platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common_platform.h; path = fmod/common_platform.h; sourceTree = "<group>"; };
+		01C12953218833D90093A7FD /* common_platform.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = common_platform.mm; path = fmod/common_platform.mm; sourceTree = "<group>"; };
+		01C12954218833D90093A7FD /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = fmod/common.h; sourceTree = "<group>"; };
+		01C12955218833D90093A7FD /* common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = common.cpp; path = fmod/common.cpp; sourceTree = "<group>"; };
+		01C12958218834270093A7FD /* fmod_errors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fmod_errors.h; path = fmod/fmod_errors.h; sourceTree = "<group>"; };
+		01C12959218841C90093A7FD /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
 		01FE7DE32181A74B00DFC465 /* OpenNativeModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenNativeModule.h; sourceTree = "<group>"; };
-		01FE7E192181A77800DFC465 /* OpenNativeModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OpenNativeModule.m; sourceTree = "<group>"; };
 		01FE7E1B2181A87C00DFC465 /* NativeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NativeViewController.h; sourceTree = "<group>"; };
 		01FE7E1C2181A8A900DFC465 /* NativeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NativeViewController.m; sourceTree = "<group>"; };
 		139105B61AF99BAD00B5F7CC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = "../node_modules/react-native/Libraries/Settings/RCTSettings.xcodeproj"; sourceTree = "<group>"; };
 		139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = "../node_modules/react-native/Libraries/WebSocket/RCTWebSocket.xcodeproj"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* test_rn_native.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = test_rn_native.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = test_rn_native/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = test_rn_native/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = test_rn_native/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = test_rn_native/Info.plist; sourceTree = "<group>"; };
@@ -363,6 +386,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				01C1295A218841C90093A7FD /* GameController.framework in Frameworks */,
+				01C1295121882BCA0093A7FD /* libfmodL_iphonesimulator.a in Frameworks */,
+				01C12941218804DF0093A7FD /* libfmodstudioL_iphonesimulator.a in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
@@ -486,15 +512,31 @@
 		13B07FAE1A68108700A75B9A /* test_rn_native */ = {
 			isa = PBXGroup;
 			children = (
+				01C12958218834270093A7FD /* fmod_errors.h */,
+				01C12952218833D90093A7FD /* common_platform.h */,
+				01C12953218833D90093A7FD /* common_platform.mm */,
+				01C12955218833D90093A7FD /* common.cpp */,
+				01C12954218833D90093A7FD /* common.h */,
+				01C1294F21882B460093A7FD /* fmod_dsp.h */,
+				01C1294E21882B1A0093A7FD /* fmod_codec.h */,
+				01C1294C21882B1A0093A7FD /* fmod_dsp_effects.h */,
+				01C1294D21882B1A0093A7FD /* fmod_output.h */,
+				01C1294B21882AF30093A7FD /* fmod_common.h */,
+				01C1294A218807320093A7FD /* fmod_ios.h */,
+				01C12947218807310093A7FD /* fmod_studio_common.h */,
+				01C12945218807310093A7FD /* fmod_studio.h */,
+				01C12949218807320093A7FD /* fmod_studio.hpp */,
+				01C12946218807310093A7FD /* fmod.h */,
+				01C12948218807310093A7FD /* fmod.hpp */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
-				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
+				01132B4021845C8D0018A518 /* AppDelegate.mm */,
+				01132B1921845C7B0018A518 /* OpenNativeModule.mm */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				01FE7DE32181A74B00DFC465 /* OpenNativeModule.h */,
-				01FE7E192181A77800DFC465 /* OpenNativeModule.m */,
 				01FE7E1B2181A87C00DFC465 /* NativeViewController.h */,
 				01FE7E1C2181A8A900DFC465 /* NativeViewController.m */,
 			);
@@ -527,6 +569,9 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				01C12959218841C90093A7FD /* GameController.framework */,
+				01C1295021882BCA0093A7FD /* libfmodL_iphonesimulator.a */,
+				01C1291B218804DF0093A7FD /* libfmodstudioL_iphonesimulator.a */,
 				2D16E6891FA4F8E400B85C8A /* libReact.a */,
 			);
 			name = Frameworks;
@@ -1122,10 +1167,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
-				01FE7E1A2181A77800DFC465 /* OpenNativeModule.m in Sources */,
+				01132B3F21845C7B0018A518 /* OpenNativeModule.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				01132B4121845C8D0018A518 /* AppDelegate.mm in Sources */,
 				01FE7E1D2181A8A900DFC465 /* NativeViewController.m in Sources */,
+				01C12957218833D90093A7FD /* common.cpp in Sources */,
+				01C12956218833D90093A7FD /* common_platform.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1134,7 +1181,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */,
-				2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1215,10 +1261,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_OBJC_ARC = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
+				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
 				INFOPLIST_FILE = test_rn_native/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = /Users/cy/workspace/getting_start/test_rn_native/ios/fmod;
+				"LIBRARY_SEARCH_PATHS[arch=*]" = /Users/cy/workspace/getting_start/test_rn_native/ios/fmod;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1233,9 +1283,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_OBJC_ARC = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
 				INFOPLIST_FILE = test_rn_native/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				"LIBRARY_SEARCH_PATHS[arch=*]" = /Users/cy/workspace/getting_start/test_rn_native/ios/fmod;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
