@@ -11,6 +11,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -166,6 +167,13 @@ public class OpenNativeModule extends ReactContextBaseJavaModule {
     public void testNativeFmodStop() {
         testFmodStop();
     }
+
+    // 回调数据传递给RN
+    public void sendEvent2RN(String event) {
+        String eventName = "customEvent";
+        mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, event);
+    }
+
     // 创建native 方法
     public native String testParams(String[] fileList, String fmodName);
     // 播放、暂停
@@ -175,5 +183,6 @@ public class OpenNativeModule extends ReactContextBaseJavaModule {
     // JNI 回调的方法
     public void callMethod(String event) {
         Log.d("chenyang", "native callMethod event: " + event);
+        sendEvent2RN(event);
     }
 }
