@@ -26,6 +26,11 @@ using namespace std;
 extern "C" {
 #endif
 
+static FMOD::Studio::System* gsystem = NULL;
+static FMOD::Studio::EventDescription * geventDesc = NULL;
+static FMOD::Studio::EventInstance * gengine = NULL;
+static bool gStop = false;
+
 //
 // Callback to free memory-point allocation when it is safe to do so
 //
@@ -71,13 +76,19 @@ JNIEXPORT jstring JNICALL Java_com_test_1rn_1native_OpenNativeModule_testParams
         LOGD("file %d: %s",i, fileList[i].c_str());
     }
 
-    FMOD::Studio::System* gsystem;
-    FMOD::Studio::EventDescription * geventDesc;
-    FMOD::Studio::EventInstance * gengine;
+    //FMOD::Studio::System* gsystem;
+    //FMOD::Studio::EventDescription * geventDesc;
+    //FMOD::Studio::EventInstance * gengine;
 
     const int BANK_COUNT = fileList.size();
     FMOD::Studio::Bank* banks[BANK_COUNT];
 
+    if (gsystem == NULL) {
+        LOGD("init fmod studio");
+    } else {
+        LOGD("release fmod studio");
+        gsystem->release();
+    }
     FMOD::Studio::System::create(&gsystem);
     gsystem->initialize(1024, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, 0);
     gsystem->setCallback(studioCallback, FMOD_STUDIO_SYSTEM_CALLBACK_BANK_UNLOAD);
@@ -98,6 +109,36 @@ JNIEXPORT jstring JNICALL Java_com_test_1rn_1native_OpenNativeModule_testParams
 
     return env->NewStringUTF("success testParams");
 }
+
+JNIEXPORT void JNICALL Java_com_test_1rn_1native_OpenNativeModule_testFmodPause
+        (JNIEnv *env, jobject obj) {
+    if (gsystem == NULL) {
+        return;
+    }
+    bool paused = false;
+    int ret = gengine->getPaused(&paused);
+    LOGD("pause: %d, ret:%d", paused, ret);
+    ret = gengine->setPaused(!paused);
+    gsystem->update();
+}
+
+JNIEXPORT void JNICALL Java_com_test_1rn_1native_OpenNativeModule_testFmodStop
+        (JNIEnv *env, jobject obj) {
+    if (gsystem == NULL) {
+        return;
+    }
+    if (gStop == false) {
+        gengine->stop(FMOD_STUDIO_STOP_IMMEDIATE);
+        gStop = true;
+    } else {
+        gengine->start();
+        gStop = false;
+    }
+
+    gsystem->update();
+    LOGD("stop status: %d", gStop);
+}
+
 
 #ifdef __cplusplus
 }

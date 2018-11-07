@@ -130,6 +130,7 @@ public class OpenNativeModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void testNativePlayFmodBanks(ReadableMap map) {
+        testFmodStop();
         // 测试播放音频
         Log.d("chenyang", "testNativePlayFmodBanks into");
         String namePre = map.getString("name_pre");
@@ -157,6 +158,18 @@ public class OpenNativeModule extends ReactContextBaseJavaModule {
         Log.d("chenyang",s);
 
     }
+    @ReactMethod
+    public void testNativeFmodPause() {
+        testFmodPause();
+    }
+    @ReactMethod
+    public void testNativeFmodStop() {
+        testFmodStop();
+    }
     // 创建native 方法
     public native String testParams(String[] fileList, String fmodName);
+    // 播放、暂停
+    public native void testFmodPause();
+    // 停止、开始
+    public  native void testFmodStop();
 }

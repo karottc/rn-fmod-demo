@@ -15,6 +15,22 @@ extern "C" {
 JNIEXPORT jstring JNICALL Java_com_test_1rn_1native_OpenNativeModule_testParams
   (JNIEnv *, jobject, jobjectArray, jstring);
 
+/*
+ * Class:     com_test_rn_native_OpenNativeModule
+ * Method:    testFmodPause
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_test_1rn_1native_OpenNativeModule_testFmodPause
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_test_rn_native_OpenNativeModule
+ * Method:    testFmodStop
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_test_1rn_1native_OpenNativeModule_testFmodStop
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif
