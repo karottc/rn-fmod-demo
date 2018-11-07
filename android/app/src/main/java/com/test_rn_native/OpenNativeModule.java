@@ -172,4 +172,8 @@ public class OpenNativeModule extends ReactContextBaseJavaModule {
     public native void testFmodPause();
     // 停止、开始
     public  native void testFmodStop();
+    // JNI 回调的方法
+    public void callMethod(String event) {
+        Log.d("chenyang", "native callMethod event: " + event);
+    }
 }
